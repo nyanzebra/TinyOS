@@ -6,7 +6,7 @@
 namespace io {
 namespace console {
 
-void clear() {
+inline void clear() {
     for (unsigned int i = 0; i < (CONSOLE_ROWS * CONSOLE_COLUMNS); ++i) {
         gBUFFER[i] = 0;
     }
@@ -14,7 +14,7 @@ void clear() {
     gCOLUMN = 0;
 }
 
-void putchar(const char ascii, const char color = ((char) color_code::kWHITE | (char) color_code::kBLACK << 4)) {
+inline void putchar(const char ascii, const char color = ((char) color_code::kWHITE | (char) color_code::kBLACK << 4)) {
     if (gCOLUMN == CONSOLE_COLUMNS) {
         gROW++;
         gCOLUMN = 0;
@@ -30,26 +30,10 @@ void putchar(const char ascii, const char color = ((char) color_code::kWHITE | (
     }
 }
 
-void putchar(const terminal_char c) {
-    if (gCOLUMN == CONSOLE_COLUMNS) {
-        gROW++;
-        gCOLUMN = 0;
-        if (gROW == CONSOLE_ROWS) {
-            //_shift_up(); TODO
-        }
-    }
-    gBUFFER[(gROW * CONSOLE_COLUMNS) + gCOLUMN] = c.value;
-    if (c.ascii == '\n') {
-        gCOLUMN = 0;
-        gROW++;
-    }
-}
-
 namespace implementation {
 
 void printf(const char* str, const unsigned int loc, const unsigned int size) { for (unsigned int i = loc; i < size; ++i) putchar(str[i]); }
 
-// TODO: fix infinite loop here somewhere
 template <typename T, typename... Rest>
 void printf(const char* str, const unsigned int loc, const unsigned int size, T&& value, Rest&&... rest) {
     char buffer[20];
@@ -95,62 +79,4 @@ void __debug(const char* str) { for(unsigned int i = 0; i < strlen(str); ++i) pu
 
 }
 }
-
-// class output {
-// public:
-// protected:
-// private:
-//     unsigned int _row; // max 25
-//     unsigned int _column; // max 80
-//     unsigned char _foreground_color;
-//     unsigned char _background_color;
-//     volatile short* _vga_buffer;
-// public:
-//     output() : _row(0), _column(0), _foreground_color(kWHITE), _background_color(kBLACK), _vga_buffer(const_cast<volatile short*>(VGA_BUFFER)) {}
-//     output(unsigned char foreground_color, unsigned char background_color) : _row(0), _column(0), _foreground_color(foreground_color), _background_color(background_color), _vga_buffer(const_cast<volatile short*>(VGA_BUFFER)) {}
-//     output(const output&) = delete;
-//     output(output&&) = delete;
-//     ~output() = default;
-
-//     output& operator=(const output&) = delete;
-//     output& operator=(output&&) = delete;
-
-//     output& operator<<(const char* output) { return _write(output, strlen(output)); }
-
-// protected:
-// private:
-
-
-//     output& _write(const char* output, const unsigned int length) {
-//         for (unsigned int i = 0; i < length; ++i) {
-//             _write(output[i]);
-//             _column++;
-//         }
-//         return *this;
-//     }
-
-//     void _write(const char output) { 
-//         if (_column == OS_CONSOLE_COLUMNS) {
-//             _row++;
-//             _column = 0;
-//             if (_row == OS_CONSOLE_ROWS) {
-//                 //_shift_up(); TODO
-//             }
-//         }
-//         _vga_buffer[(_row * OS_CONSOLE_COLUMNS) + _column] = (short) output | (short) (_foreground_color | _background_color << 4) << 8;
-//         if (output == '\n') {
-//             _column = 0;
-//             _row++;
-//         }
-//     }
-
-//     // void _shift_up() {
-//     //     const short* src = const_cast<short*>(_vga_buffer + OS_CONSOLE_COLUMNS);
-//     //     short* dst = const_cast<short*>(_vga_buffer);
-//     //     strcpy(src, dst);
-//     // }
-
-
-// };
-
 

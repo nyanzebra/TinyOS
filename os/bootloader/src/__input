@@ -3,72 +3,28 @@
 #include "__string"
 #include "__console"
 
-class input {
-public:
-protected:
-private:
-    unsigned int _row; // max 25
-    unsigned int _column; // max 80
-    unsigned char _foreground_color;
-    unsigned char _background_color;
-    volatile short* _vga_buffer;
-public:
-    input() : _row(0), _column(0), _foreground_color(kWHITE), _background_color(kBLACK), _vga_buffer(const_cast<volatile short*>(VGA_BUFFER)) {}
-    input(unsigned char foreground_color, unsigned char background_color) : _row(0), _column(0), _foreground_color(foreground_color), _background_color(background_color), _vga_buffer(const_cast<volatile short*>(VGA_BUFFER)) {}
-    input(const input&) = delete;
-    input(input&&) = delete;
-    ~input() = default;
+namespace io {
+namespace console {
 
-    input& operator=(const input&) = delete;
-    input& operator=(input&&) = delete;
+static inline unsigned char get_byte(unsigned short port) {
+    unsigned char ret;
+    asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
+    return ret;
+}
 
-    input& operator>>(const char* input) { return _write(input, strlen(input)); }
+static inline unsigned short get_short(unsigned short port) {
+    unsigned short ret;
+    asm volatile ("inw %1, %0" : "=a"(ret) : "Nd"(port));
+    return ret;
+}
 
-protected:
-private:
-    unsigned char _color() const {
-        return _foreground_color | _background_color << 4;
-    }
+static inline unsigned long get_long(unsigned short port) {
+    unsigned long ret;
+    asm volatile ("inl %1, %0" : "=a"(ret) : "Nd"(port));
+    return ret;
+}
 
-    unsigned short _color_char(const char c) const {
-        return (short) c | (short) _color() << 8;
-    }
-
-    input& _write(const char* input, const unsigned int length) {
-        for (unsigned int i = 0; i < length; ++i) {
-            _write(input[i]);
-            _column++;
-        }
-        return *this;
-    }
-
-    void _write(const char input) { 
-        if (_column == OS_CONSOLE_COLUMNS) {
-            _row++;
-            _column = 0;
-            if (_row == OS_CONSOLE_ROWS) {
-                //_shift_up(); TODO
-            }
-        }
-        _vga_buffer[(_row * OS_CONSOLE_COLUMNS) + _column] = _color_char(input);
-        if (input == '\n') {
-            _column = 0;
-            _row++;
-        }
-    }
-
-    // void _shift_up() {
-    //     const short* src = const_cast<short*>(_vga_buffer + OS_CONSOLE_COLUMNS);
-    //     short* dst = const_cast<short*>(_vga_buffer);
-    //     strcpy(src, dst);
-    // }
-
-    void _clear() {
-        for (unsigned int i = 0; i < (OS_CONSOLE_ROWS * OS_CONSOLE_COLUMNS); ++i) {
-            _vga_buffer[i] = 0;
-        }
-    }
-
-};
+}
+}
 
 
