@@ -1,2 +1,2 @@
 language: c++
-script: Makefile
+script: make clean && make all && make run
