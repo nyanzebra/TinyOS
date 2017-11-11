@@ -1,0 +1,3 @@
+# Set any compile flags required.
+SET(ISA_CXX_FLAGS PARENT_SCOPE)
+SET(ISA_ASM_FLAGS PARENT_SCOPE)

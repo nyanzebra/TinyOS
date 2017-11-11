@@ -1,5 +1,9 @@
 #pragma once
 
+#include "string.hpp"
+
+namespace tiny_os {
+
 #ifndef CONSOLE_CONSTANTS
 #define CONSOLE_CONSTANTS
 
@@ -15,7 +19,6 @@
 #endif
 
 namespace io {
-
 namespace console {
 
 enum class color_code : char {
@@ -56,10 +59,22 @@ struct terminal_char {
     terminal_char(const unsigned char ascii, const struct color color) : ascii(ascii), color(color), value((short) ascii | (short) color.value << 8) {}
 };
 
-volatile short* gBUFFER = VGA_BUFFER;
+template <size_type N>
+struct terminal_string {
+    terminal_char value[N];
+    void operator=(const char* str) {
+        for (size_type i = 0; i < strlen(str) && i < N; ++i) {
+            value[i] = str[i];
+        }
+    }
+};
+
+static volatile short* gBUFFER = VGA_BUFFER;
 static char gROW = 0;
 static char gCOLUMN = 0;
+static color_code gFOREGROUND = color_code::kWHITE;
+static color_code gBACKGROUND = color_code::kBLACK;
 
-}
-
-}
+} // namespace console
+} // namespace io
+} // namespace tiny os

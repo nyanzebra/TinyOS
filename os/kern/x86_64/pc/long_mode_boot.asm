@@ -1,5 +1,5 @@
 global long_mode_start
-extern cpp_main 
+extern cpp_main
 
 section .text
 bits 64
@@ -11,7 +11,7 @@ long_mode_start:
     mov es, ax
     mov fs, ax
     mov gs, ax
-
+    
     call cpp_main
 .os_returned:
     ; cpp main returned, print `OS returned!`

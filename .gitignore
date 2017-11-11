@@ -1,0 +1,5 @@
+os/bin/*
+os/tst/bin/*
+*.o
+*.bin
+*.iso

@@ -1,34 +1,31 @@
+global magic
+global mbi
+
 global start
 extern long_mode_start
-
-section .rodata
-gdt64:
-    dq 0 ; zero entry
-.code: equ $ - gdt64 ; new
-    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code segment
-.pointer:
-    dw $ - gdt64 - 1
-    dq gdt64
 
 section .text
 bits 32
 start:
     mov esp, stack_top
+    mov [magic], eax
+    mov [mbi], ebx
     ;mov edi, ebx ; pass multiboot info, will be available by cpp_main
 
     call check_multiboot
     call check_cpuid
-    call check_long_mode 
-    call set_up_page_tables 
-    call enable_paging     
-
+    call check_long_mode
+    call set_up_page_tables
+    call enable_paging
+    call set_up_SSE
+    
     ; load the 64-bit GDT
     lgdt [gdt64.pointer]
 
     jmp gdt64.code:long_mode_start
 
 error:
-    ; print 'ERR'
+    ; print ERR
     mov dword [0xb8000], 0x4f524f45
     mov dword [0xb8004], 0x4f3a4f52
     mov dword [0xb8008], 0x4f204f20
@@ -40,13 +37,13 @@ check_long_mode:
     mov eax, 0x80000000    ; implicit argument for cpuid
     cpuid                  ; get highest supported argument
     cmp eax, 0x80000001    ; it needs to be at least 0x80000001
-    jb .no_long_mode       ; if it's less, the CPU is too old for long mode
+    jb .no_long_mode       ; if it is less, the CPU is too old for long mode
 
     ; use extended info to test if long mode is available
     mov eax, 0x80000001    ; argument for extended processor info
     cpuid                  ; returns various feature bits in ecx and edx
     test edx, 1 << 29      ; test if the LM-bit is set in the D-register
-    jz .no_long_mode       ; If it's not set, there is no long mode
+    jz .no_long_mode       ; If it is not set, there is no long mode
     ret
 .no_long_mode:
     mov al, "2"
@@ -80,7 +77,7 @@ check_cpuid:
     popfd
 
     ; Compare EAX and ECX. If they are equal then that means the bit
-    ; wasn't flipped, and CPUID isn't supported.
+    ; was not flipped, and CPUID is not supported.
     cmp eax, ecx
     je .no_cpuid
     ret
@@ -97,6 +94,11 @@ check_multiboot:
     jmp error
 
 set_up_page_tables:
+    ; recursive mapping
+    mov eax, p4_table
+    or eax, 0b11 ; present + writable
+    mov [p4_table + 511 * 8], eax
+
     ; map first P4 entry to P3 table
     mov eax, p3_table
     or eax, 0b11 ; present + writable
@@ -109,7 +111,7 @@ set_up_page_tables:
 
     ; map each P2 entry to a huge 2MiB page
     mov ecx, 0         ; counter variable
-.map_p2_table: ;local namespace with '.'
+.map_p2_table:
     ; map ecx-th P2 entry to a huge page that starts at address 2MiB*ecx
     mov eax, 0x200000  ; 2MiB
     mul ecx            ; start address of ecx-th page
@@ -122,7 +124,7 @@ set_up_page_tables:
 
     ret
 
-; Check for SSE and enable it. If it's not supported throw error "a".
+; Check for SSE and enable it. If it is not supported throw error.
 set_up_SSE:
     ; check for SSE
     mov eax, 0x1
@@ -167,7 +169,23 @@ enable_paging:
 
     ret
 
+section .rodata
+gdt64:
+    dq 0 ; zero entry
+.code: equ $ - gdt64 ; new
+    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code segment
+.pointer:
+    dw $ - gdt64 - 1
+    dq gdt64
+
+section .data
+magic:
+    dd 1
+mbi:
+    dd 1
+
 section .bss
+; paging
 align 4096
 p4_table: ;the Page-Map Level-4 Table (PML4),
     resb 4096
