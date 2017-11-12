@@ -18,3 +18,19 @@ TEST(memcpy, DifferentTypesSourceToDestination) {
   tiny_os::memcpy(az, ai);
   EXPECT_EQ(*ai, 'a');
 }
+
+TEST(swap, SameType) {
+  char a = 'a';
+  char b = 'b';
+  tiny_os::swap(a, b);
+  EXPECT_EQ(a, 'b');
+  EXPECT_EQ(b, 'a');
+}
+
+TEST(swap, ConvertibleTypes) {
+  int a = 97;
+  char b = 'b';
+  tiny_os::swap(a, b);
+  EXPECT_EQ(a, 'b');
+  EXPECT_EQ(b, 'a');
+}

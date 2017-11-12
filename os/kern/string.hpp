@@ -13,12 +13,14 @@ namespace tiny_os {
 #endif
 
 size_type strlen(const char* str) {
+    if (!str) return 0;
     size_type i = 0;
-    while (str[i++] != STREND);
+    while (str[i] != STREND) ++i;
     return i;
 }
 
 void strcpy(const char* source, const size_type source_length, char*& destination, const size_type destination_length) {
+    if (!source || !destination) return;
     for (size_type i = 0; i < destination_length && i < source_length; ++i) {
         destination[i] = source[i];
     }

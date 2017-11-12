@@ -31,7 +31,7 @@ struct memory_node {
     memory_node* prev_free;
 };
 
- static const size_type memory_node_size = sizeof(memory_node);
+[[maybe_unused]] static const size_type memory_node_size = sizeof(memory_node);
 static const size_type memory_node_user_space_offset = offsetof(memory_node, size) + sizeof(size_type);
 
 
@@ -157,7 +157,7 @@ union entry_flag { // should be aligned and have size of 8
 
 entry_flag page_table[ENTRY_COUNT];
 
- static const size_type p4_table = 0177777777777777770000;
+[[maybe_unused]] static const size_type p4_table = 0177777777777777770000;
 
 void initialize_page_table() {
   for (auto i = 0u; i < ENTRY_COUNT; ++i) {

@@ -4,15 +4,12 @@ namespace tiny_os {
 
 typedef unsigned long long size_type;
 
-#ifdef assert
-#undef assert
-#endif
-
-void assert(const char* const expr, const char* const message, const char* const file, const char* const function, size_type line) {
+#ifndef assert
+void _assert(const char* const expr, const char* const message, const char* const file, const char* const function, size_type line) {
   //TODO: we need to have an exception file for printing exceptions and killing the kernel
 }
-
-#define ASSERT(expr, msg) (if(!expr) assert(#expr, msg, __FILE__, __FUNCTION__, __LINE__))
+#define assert(expr, message) (if (!expr) _assert(#expr, message, __FILE__, __FUNCTION__, __LINE__))
+#endif
 
 #ifndef BIT_FUNCTIONS
 #define BIT_FUNCTIONS
@@ -38,8 +35,8 @@ void memcpy(const T* const source, size_type source_size, U*& destination, size_
 template <typename T, typename U>
 void memcpy(const T* const source, U*& destination) { memcpy(source, sizeof(source) / sizeof(T), destination, sizeof(destination) / sizeof(U)); }
 
-template <typename T>
-void swap(T& a, T& b) {
+template <typename T, typename U = T>
+void swap(T& a, U& b) {
     T temp = a;
     a = b;
     b = temp;

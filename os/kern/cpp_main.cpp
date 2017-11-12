@@ -12,7 +12,7 @@ int cpp_main(int argc, const char** argv) {
     tiny_os::io::console::printf("5/2 is %d\n", 5/2);
     tiny_os::io::console::printf("Hi, and welcome to TinyOS, date: %d-%s-%s\n", 2017, "07", "04");
     tiny_os::io::console::printf("magic number 0x%x\n", magic);
-    
+
     if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
         tiny_os::io::console::printf("invalid magic number %x\n", MULTIBOOT_BOOTLOADER_MAGIC);
         return 0;
