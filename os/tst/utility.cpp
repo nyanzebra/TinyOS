@@ -1,19 +1,20 @@
 #include "gtest/gtest.h"
 #include "utility.hpp"
-
-//using ::testing::Return;
+#include <string>
 
 TEST(memcpy, SourceToDestination) {
-  char* src = "src";
-  char* dst = "dst";
-  tiny_os::memcpy(src, dst);
-  EXPECT_STREQ(src, dst);
+  std::string src = "src";
+  std::string dst = "dst";
+  char* dstp = const_cast<char*>(dst.data());
+  tiny_os::memcpy(src.c_str(), dstp);
+  EXPECT_STREQ(src.c_str(), dst.c_str());
 }
 
 TEST(memcpy, DifferentTypesSourceToDestination) {
-  char* a = "a";
+  char a = 'a';
+  char* az = &a;
   int b = 'b';
   int* ai = &b;
-  tiny_os::memcpy(a, ai);
+  tiny_os::memcpy(az, ai);
   EXPECT_EQ(*ai, 'a');
 }
