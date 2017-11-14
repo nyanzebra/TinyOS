@@ -25,7 +25,7 @@ set(PLATFORM "pc" CACHE STRING "Default platform" FORCE)
 set(ARCHITECTURE "x86_64")
 LOAD_PROFILE(${ARCHITECTURE} ${PLATFORM})
 
-file(GLOB KERNEL_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "kern/*")
+file(GLOB KERNEL_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "kern/*.hpp")
 list(REMOVE_ITEM KERNEL_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "kern/*.cpp")
 file(GLOB KERNEL_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "kern/*.cpp")
 
@@ -48,7 +48,7 @@ set(CMAKE_LINKER "${PC_LINKER}" CACHE STRING "Default linker" FORCE)
 set(CXX_MODULE_FLAGS "-fmodules -fmodule-map-file=./modules/modules.map -fimplicit-modules")
 set(CXX_WARNING_LEVEL "-Wall")
 # -nostartfiles
-set(KERNEL_FLAGS "-mno-red-zone -fpermissive -nostdlib -ffreestanding -m64")
+set(KERNEL_FLAGS "-mno-red-zone -fpermissive -nostdlib -ffreestanding -m64 -Os")
 # add modules later...
 set(CMAKE_CXX_FLAGS_DEFAULT "${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_BASE "-std=c++1z -nostdlib ${KERNEL_FLAGS}")
@@ -75,14 +75,15 @@ set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64) #elf64?
 enable_language(ASM_NASM)
 if(CMAKE_ASM_NASM_COMPILER_LOADED)
   set(CMAKE_ASM_NASM_FLAGS "-Werror -felf64" CACHE STRING "default nasm flags" FORCE)
-  message("nasm loaded adding ${CMAKE_CURRENT_SOURCE_DIR}/kern/${ARCHITECTURE}/${PLATFORM}/*.asm")
   set(CMAKE_ASM_NASM_COMPILER "/usr/local/bin/nasm" CACHE STRING "Correct nasm" FORCE)
   file(GLOB ASM_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/kern/${ARCHITECTURE}/${PLATFORM}/*.asm")
   set(ASM_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/kern/${ARCHITECTURE}/${PLATFORM}")
-  add_library(ASM_OBJECTS OBJECT "${ASM_SOURCES}")
+	list(SORT ASM_SOURCES)
+  message("nasm loaded adding ${ASM_SOURCES}")
+	add_library(ASM_OBJECTS OBJECT "${ASM_SOURCES}")
 endif(CMAKE_ASM_NASM_COMPILER_LOADED)
 
-add_library(KERNEL_OBJECTS OBJECT ${KERNEL_SOURCES})
+add_library(KERNEL_OBJECTS OBJECT ${KERNEL_SOURCES} ${KERNEL_HEADERS})
 
 set(CMAKE_CXX_COMPILER_TARGET ${triple})
 message("setting compiler to ${CMAKE_CXX_COMPILER}")

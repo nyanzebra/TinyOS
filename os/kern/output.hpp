@@ -17,32 +17,32 @@ inline void error_colors() { gFOREGROUND = color_code::kRED; gBACKGROUND = color
 inline void default_colors() { gFOREGROUND = color_code::kWHITE; gBACKGROUND = color_code::kBLACK; }
 
 inline void clear() {
-    for (size_type i = 0; i < (CONSOLE_ROWS * CONSOLE_COLUMNS); ++i) {
-        gBUFFER[i] = 0;
-    }
-    gROW = 0;
-    gCOLUMN = 0;
+	for (size_type i = 0; i < (CONSOLE_ROWS * CONSOLE_COLUMNS); ++i) {
+		gBUFFER[i] = 0;
+	}
+	gROW = 0;
+	gCOLUMN = 0;
 }
 
 inline void putchar(const char* str) {}
 
 inline void putchar(const char ascii) {
-    if (ascii != STREND) {
-        if (gCOLUMN == CONSOLE_COLUMNS) {
-            gROW++;
-            gCOLUMN = 0;
-            if (gROW == CONSOLE_ROWS) {
-                //_shift_up(); TODO
-            }
-        }
-        if (ascii == NEWLINE) {
-            gCOLUMN = 0;
-            gROW++;
-        } else {
-            const char color = (char) foreground() | (char) background() << 4;
-            gBUFFER[(gROW * CONSOLE_COLUMNS) + gCOLUMN++] = (short) ascii | (short) color << 8;
-        }
-    }
+	if (ascii != STREND) {
+		if (gCOLUMN == CONSOLE_COLUMNS) {
+			gROW++;
+			gCOLUMN = 0;
+			if (gROW == CONSOLE_ROWS) {
+				//_shift_up(); TODO
+			}
+		}
+		if (ascii == NEWLINE) {
+			gCOLUMN = 0;
+			gROW++;
+		} else {
+			const char color = (char) foreground() | (char) background() << 4;
+			gBUFFER[(gROW * CONSOLE_COLUMNS) + gCOLUMN++] = (short) ascii | (short) color << 8;
+		}
+	}
 }
 
 namespace implementation {
@@ -62,42 +62,42 @@ const char* format_as_string(char* value, char c) { return value ? value : "(nul
 const char* format_as_string(const char* value, char c) { return value ? value : "(null)"; }
 
 const char* format_as_string(long value, char c) {
-  char buffer[20];
-  return ltoa(value, buffer, c);
+	char buffer[20];
+	return ltoa(value, buffer, c);
 }
 
 template <typename T, typename... Rest>
 void printf(const char* str, const size_type loc, const size_type size, T value, Rest... rest) {
-  const char* ptr;
-  for (size_type i = loc; i < size; ++i) {
-    char c = str[i];
-    if (c == '%') {
-      char type = str[i + 1];
-      switch (type) {
-        case 'u':
-        case 'd':
-        case 'x':
-          char buffer[20];
-          ptr = ltoa((long long)value, buffer, type);
-          printf(ptr);
-          break;
-        case 'c':
-          putchar(value);
-          break;
-        case 's':
-          ptr = reinterpret_cast<const char*>(value) ? reinterpret_cast<const char*>(value) : "(null)";
-          printf(ptr);
-          break;
-        default:
-          putchar(value);
-          break;
-      }
-      printf(str, i + 2, size, rest...);
-      break;
-    } else {
-      putchar(c);
-    }
-  }
+	const char* ptr;
+	for (size_type i = loc; i < size; ++i) {
+		char c = str[i];
+		if (c == '%') {
+			char type = str[i + 1];
+			switch (type) {
+				case 'u':
+				case 'd':
+				case 'x':
+					char buffer[20];
+					ptr = ltoa((long long)value, buffer, type);
+					printf(ptr);
+					break;
+				case 'c':
+					putchar(value);
+					break;
+				case 's':
+					ptr = reinterpret_cast<const char*>(value) ? reinterpret_cast<const char*>(value) : "(null)";
+					printf(ptr);
+					break;
+				default:
+					putchar(value);
+					break;
+			}
+			printf(str, i + 2, size, rest...);
+			break;
+		} else {
+			putchar(c);
+		}
+	}
 }
 
 } // namespace implementation
@@ -145,14 +145,14 @@ void log(const char* message, const char* info, const char* func, const char* le
 #ifndef LOG
 #define __LOG(str, func, level) io::console::log(str, FILE_FUNCTION_LINE(), func, level)
 #define LOG(str, func, level) __LOG(str, func, level)
-    #ifndef DEBUG
-    #define __DEBUG(str, func) LOG(str, func, "[debug] ")
-    #define DEBUG(str) io::console::debug_colors(); __DEBUG(str, __PRETTY_FUNCTION__); io::console::default_colors();
-    #endif
-    #ifndef ERROR
-    #define __ERROR(str, func) LOG(str, func, "[error] ")
-    #define ERROR(str) io::console::error_colors(); __ERROR(str, __PRETTY_FUNCTION__); io::console::default_colors();
-    #endif
+	#ifndef DEBUG
+	#define __DEBUG(str, func) LOG(str, func, "[debug] ")
+	#define DEBUG(str) io::console::debug_colors(); __DEBUG(str, __PRETTY_FUNCTION__); io::console::default_colors();
+	#endif
+	#ifndef ERROR
+	#define __ERROR(str, func) LOG(str, func, "[error] ")
+	#define ERROR(str) io::console::error_colors(); __ERROR(str, __PRETTY_FUNCTION__); io::console::default_colors();
+	#endif
 #endif
 
 #ifndef BLOCK_IF_TRUE_PRINT

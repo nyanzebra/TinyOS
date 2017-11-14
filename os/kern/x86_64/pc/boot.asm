@@ -1,8 +1,52 @@
 global magic
 global mbi
 
+; https://github.com/RWTH-OS/eduOS/blob/42293ad056fb9bb8ab7f14473821849ca416898a/arch/x86/kernel/entry.asm
+section .multiboot_header ; https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#File_header
 global start
 extern long_mode_start
+ALIGN 4
+header_start:
+
+    ; boot http://nongnu.askapache.com/grub/phcoder/multiboot.pdf sec 3.12
+    dd 0xE85250D6 ; load in magic #
+    dd 0 ; load protected_mode_arch
+    dd header_end - header_start ; specify length of header
+    ; generate checksum
+    dd 0x100000000 - (0xE85250D6 + 0 + (header_end - header_start))
+
+    ; optional flags
+    ; see sec 3.12 https://www.gnu.org/software/grub/manual/multiboot/multiboot.html
+    dw 0 ; tag
+    dw 0 ; flags
+    dd 8 ; size of tag
+
+header_end:
+gdt64:
+	.null: equ $ - gdt64         ; The null descriptor.
+	dw 0                         ; Limit (low).
+	dw 0                         ; Base (low).
+	db 0                         ; Base (middle)
+	db 0                         ; Access.
+	db 0                         ; Granularity.
+	db 0                         ; Base (high).
+	.code: equ $ - gdt64         ; The code descriptor.
+	dw 0                         ; Limit (low).
+	dw 0                         ; Base (low).
+	db 0                         ; Base (middle)
+	db 10011000b                 ; Access.
+	db 00100000b                 ; Granularity.
+	db 0                         ; Base (high).
+	.data: equ $ - gdt64         ; The data descriptor.
+	dw 0                         ; Limit (low).
+	dw 0                         ; Base (low).
+	db 0                         ; Base (middle)
+	db 10010010b                 ; Access.
+	db 00000000b                 ; Granularity.
+	db 0                         ; Base (high).
+	.pointer:
+  dw $ - gdt64 - 1
+  dq gdt64
 
 section .text
 bits 32
@@ -18,7 +62,7 @@ start:
     call set_up_page_tables
     call enable_paging
     call set_up_SSE
-    
+
     ; load the 64-bit GDT
     lgdt [gdt64.pointer]
 
@@ -170,13 +214,6 @@ enable_paging:
     ret
 
 section .rodata
-gdt64:
-    dq 0 ; zero entry
-.code: equ $ - gdt64 ; new
-    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code segment
-.pointer:
-    dw $ - gdt64 - 1
-    dq gdt64
 
 section .data
 magic:
@@ -195,5 +232,5 @@ p2_table: ;the Page-Directory Table (PD),
     resb 4096
 ;and the Page Table (PT).
 stack_bottom:
-    resb 4 * 4096
+    resb 4 * 4096 ; orig is 4 *
 stack_top:

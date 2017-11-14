@@ -6,7 +6,7 @@ typedef unsigned long long size_type;
 
 #ifndef assert
 void _assert(const char* const expr, const char* const message, const char* const file, const char* const function, size_type line) {
-  //TODO: we need to have an exception file for printing exceptions and killing the kernel
+	//TODO: we need to have an exception file for printing exceptions and killing the kernel
 }
 #define assert(expr, message) (if (!expr) _assert(#expr, message, __FILE__, __FUNCTION__, __LINE__))
 #endif
@@ -27,9 +27,9 @@ void _assert(const char* const expr, const char* const message, const char* cons
 
 template <typename T, typename U>
 void memcpy(const T* const source, size_type source_size, U*& destination, size_type destination_size) {
-    for (auto i = 0u; i < source_size && i < destination_size; ++i) {
-        destination[i] = source[i];
-    }
+	for (auto i = 0u; i < source_size && i < destination_size; ++i) {
+		destination[i] = source[i];
+	}
 }
 
 template <typename T, typename U>
@@ -37,9 +37,9 @@ void memcpy(const T* const source, U*& destination) { memcpy(source, sizeof(sour
 
 template <typename T, typename U = T>
 void swap(T& a, U& b) {
-    T temp = a;
-    a = b;
-    b = temp;
+	T temp = a;
+	a = b;
+	b = temp;
 }
 
 template <typename T>

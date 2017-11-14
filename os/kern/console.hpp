@@ -22,51 +22,51 @@ namespace io {
 namespace console {
 
 enum class color_code : char {
-    kBLACK      = 0,
-    kBLUE       = 1,
-    kGREEN      = 2,
-    kCYAN       = 3,
-    kRED        = 4,
-    kMAGENTA    = 5,
-    kBROWN      = 6,
-    kLIGHTGREY  = 7,
-    kDARKGREY   = 8,
-    kLIGHTBLUE  = 9,
-    kLIGHTGREEN = 10,
-    kLIGHTCYAN  = 11,
-    kLIGHTRED   = 12,
-    kPINK       = 13,
-    kYELLOW     = 14,
-    kWHITE      = 15,
+	kBLACK      = 0,
+	kBLUE       = 1,
+	kGREEN      = 2,
+	kCYAN       = 3,
+	kRED        = 4,
+	kMAGENTA    = 5,
+	kBROWN      = 6,
+	kLIGHTGREY  = 7,
+	kDARKGREY   = 8,
+	kLIGHTBLUE  = 9,
+	kLIGHTGREEN = 10,
+	kLIGHTCYAN  = 11,
+	kLIGHTRED   = 12,
+	kPINK       = 13,
+	kYELLOW     = 14,
+	kWHITE      = 15,
 };
 
 struct color {
-    unsigned char foreground, background;
-    unsigned char value;
+	unsigned char foreground, background;
+	unsigned char value;
 
-    operator unsigned char() { return value; }
+	operator unsigned char() { return value; }
 
-    color(const unsigned char foreground, const unsigned char background) : foreground(foreground), background(background), value(foreground | background << 4) {}
+	color(const unsigned char foreground, const unsigned char background) : foreground(foreground), background(background), value(foreground | background << 4) {}
 };
 
 struct terminal_char {
-    unsigned char ascii;
-    struct color color;
-    unsigned short value;
+	unsigned char ascii;
+	struct color color;
+	unsigned short value;
 
-    operator unsigned short() { return value; }
+	operator unsigned short() { return value; }
 
-    terminal_char(const unsigned char ascii, const struct color color) : ascii(ascii), color(color), value((short) ascii | (short) color.value << 8) {}
+	terminal_char(const unsigned char ascii, const struct color color) : ascii(ascii), color(color), value((short) ascii | (short) color.value << 8) {}
 };
 
 template <size_type N>
 struct terminal_string {
-    terminal_char value[N];
-    void operator=(const char* str) {
-        for (size_type i = 0; i < strlen(str) && i < N; ++i) {
-            value[i] = str[i];
-        }
-    }
+	terminal_char value[N];
+	void operator=(const char* str) {
+		for (size_type i = 0; i < strlen(str) && i < N; ++i) {
+			value[i] = str[i];
+		}
+	}
 };
 
 static volatile short* gBUFFER = VGA_BUFFER;

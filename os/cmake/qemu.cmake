@@ -6,12 +6,9 @@ set(QEMU_SYSTEM "qemu-system-${ARCHITECTURE}")
 set(QEMU_ARGS "-cdrom ${CMAKE_BINARY_DIR}/isofiles/${PROJECT_NAME}.iso -s -m 128M -D ${CMAKE_BINARY_DIR}/qemu")
 find_program(QEMU ${QEMU_SYSTEM} REQUIRED)
 
-add_custom_target(
-	run # Make target
-	# COMMAND cp ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.iso ${CMAKE_BINARY_DIR}/isofiles/${PROJECT_NAME}.iso
-	# DEPENDS ${PROJECT_NAME}.iso
-)
-
+message("add run command")
+add_custom_target(run)
+message("qemu will run ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.iso")
 add_custom_command(
 	COMMAND ${QEMU}
 	ARGS -cdrom ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.iso -s -m 128M

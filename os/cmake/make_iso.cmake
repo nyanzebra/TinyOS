@@ -3,8 +3,10 @@ file (MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/isofiles ${CMAKE_BINARY_DIR}/isofiles/b
 
 file(COPY ${CMAKE_SOURCE_DIR}/kern/${ARCHITECTURE}/${PLATFORM}/grub.cfg DESTINATION ${CMAKE_BINARY_DIR}/isofiles/boot/grub)
 
+message("attaching grub-mkrescue")
 find_program(MAKE_RESCUE /users/robertbaldwin/opt/bin/grub-mkrescue REQUIRED)
 
+message("adding target for iso")
 add_custom_target(
 	iso # Make target
 	COMMAND cp ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.bin ${CMAKE_BINARY_DIR}/isofiles/boot/${PROJECT_NAME}.bin
