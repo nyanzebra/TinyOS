@@ -1,4 +1,4 @@
-# TinyOS [![Build Status](https://travis-ci.org/nyanzebra/TinyOS.svg?branch=master)](https://travis-ci.org/nyanzebra/TinyOS)
+# TinyOS [![Build Status](https://travis-ci.org/nyanzebra/TinyOS.svg?branch=master)](https://travis-ci.org/nyanzebra/TinyOS) [![Coverage Status](https://coveralls.io/repos/github/nyanzebra/TinyOS/badge.svg?branch=master)](https://coveralls.io/github/nyanzebra/TinyOS?branch=master)
 
 ## Why make an OS?
 Because it is fun, and it will be cool to make an OS that has a small foot print and that I can use eventually for developing other projects
