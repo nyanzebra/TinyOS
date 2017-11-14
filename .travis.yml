@@ -4,6 +4,21 @@ os:
   - osx
   - linux
 
+before_install:
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      pip install --user cpp-coveralls
+    else
+      brew update
+      brew install pyenv
+      eval "$(pyenv init -)"
+      pyenv install 2.7.6
+      pyenv global 2.7.6
+      pyenv rehash
+      pip install cpp-coveralls
+      pyenv rehash
+    fi
+
 script:
   - which cmake
   - cmake -Bos/tst/bin -Hos/tst
@@ -57,3 +72,6 @@ install:
 
 compiler:
   - clang++
+
+after_success:
+  - coveralls -x cpp --exclude-pattern **gtest** --exclude-pattern **CMake** --gcov-options '\-lp'

@@ -6,7 +6,7 @@ set(MSVC_COMPILER "msvc")
 
 set(CXX_WARNING_LEVEL "-Wall")
 # add modules later...
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z ${CXX_WARNING_LEVEL}" CACHE STRING "CXX flags" FORCE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -ftest-coverage ${CXX_WARNING_LEVEL}" CACHE STRING "CXX flags" FORCE)
 set(CMAKE_CXX_STANDARD "17" CACHE STRING "Default standard CXX")
 set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Default disallow extensions")
 set(CMAKE_CXX_COMPILE_FEATURES "${CMAKE_CXX_COMPILE_FEATURES} CXX_STD_17" CACHE STRING "Default CXX compile features")
