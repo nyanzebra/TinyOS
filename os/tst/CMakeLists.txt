@@ -18,7 +18,7 @@ set(MSVC_COMPILER "msvc")
 
 set(CXX_WARNING_LEVEL "-Wall")
 # add modules later...
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -ftest-coverage -fprofile-arcs ${CXX_WARNING_LEVEL}" CACHE STRING "CXX flags" FORCE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -std=c++1z -ftest-coverage -fprofile-arcs ${CXX_WARNING_LEVEL}" CACHE STRING "CXX flags" FORCE)
 set(CMAKE_CXX_STANDARD "17" CACHE STRING "Default standard CXX")
 set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Default disallow extensions")
 set(CMAKE_CXX_COMPILE_FEATURES "${CMAKE_CXX_COMPILE_FEATURES} CXX_STD_17" CACHE STRING "Default CXX compile features")
@@ -70,10 +70,12 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 message("${CMAKE_SOURCE_DIR}")
-include_directories("${CMAKE_SOURCE_DIR}/../kern")
+include_directories("${CMAKE_SOURCE_DIR}/../kern/")
 
 file(GLOB SRCS *.cpp)
-
+file(GLOB KERNEL_HEADERS ../kern/*.hpp)
+set(SRCS ${SRCS} ${KERNEL_HEADERS})
+message("Sources: ${SRCS}")
 add_executable(testos ${SRCS})
 
 target_link_libraries(testos gtest_main)
