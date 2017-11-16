@@ -1,12 +1,24 @@
 cmake_minimum_required(VERSION 3.9)
 
+enable_testing()
+
+# Cmake module path (if exists)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake)
+
+# We probably don't want this to run on every build.
+option(COVERALLS "Generate coveralls data" OFF)
+
+if (COVERALLS)
+    include(Coveralls)
+endif()
+
 set(UNIX_COMPILER "g++")
 set(OSX_COMPILER "clang++")
 set(MSVC_COMPILER "msvc")
 
 set(CXX_WARNING_LEVEL "-Wall")
 # add modules later...
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -ftest-coverage ${CXX_WARNING_LEVEL}" CACHE STRING "CXX flags" FORCE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -ftest-coverage -fprofile-arcs ${CXX_WARNING_LEVEL}" CACHE STRING "CXX flags" FORCE)
 set(CMAKE_CXX_STANDARD "17" CACHE STRING "Default standard CXX")
 set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Default disallow extensions")
 set(CMAKE_CXX_COMPILE_FEATURES "${CMAKE_CXX_COMPILE_FEATURES} CXX_STD_17" CACHE STRING "Default CXX compile features")
@@ -65,3 +77,14 @@ file(GLOB SRCS *.cpp)
 add_executable(testos ${SRCS})
 
 target_link_libraries(testos gtest_main)
+
+if (COVERALLS)
+
+# Create the coveralls target.
+coveralls_setup(
+		"${SRCS}" # The source files.
+		ON                 # If we should upload.
+		)
+endif()
+
+add_test(testos ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/testos)

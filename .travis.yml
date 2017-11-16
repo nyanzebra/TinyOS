@@ -4,28 +4,16 @@ os:
   - osx
   - linux
 
-before_install:
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      pip install --user cpp-coveralls
-    else
-      brew update
-      brew install pyenv
-      eval "$(pyenv init -)"
-      pyenv install 2.7.6
-      pyenv global 2.7.6
-      pyenv rehash
-      pip install cpp-coveralls
-      pyenv rehash
-    fi
-
 script:
   - which cmake
-  - cmake -Bos/tst/bin -Hos/tst
+  - export COVERALLS_SERVICE_NAME=travis-ci
+  - export COVERALLS_REPO_TOKEN=PC6vSUfaLZNXNXQtyzGqzxkgZX13hTxxf
+  - cmake -Bos/tst/bin -Hos/tst -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug
   - pwd
   - cd os/tst/bin
   - make clean
   - make testos
+  - make coveralls
   - ./testos
 
 #https://github.com/Microsoft/GSL/blob/master/.travis.yml
@@ -72,6 +60,3 @@ install:
 
 compiler:
   - clang++
-
-after_success:
-  - coveralls -x cpp --exclude-pattern **gtest** --exclude-pattern **CMake** --gcov-options '\-lp'
