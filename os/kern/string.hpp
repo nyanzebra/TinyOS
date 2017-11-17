@@ -44,15 +44,22 @@ const T ato(const char* const str, size_type size) {
 	bool negative = str[0] == '-';
 	size_type base = 10;
 	for (auto i = 0u; i < size; ++i) {
+		if ((str[i] > 'f') || (str[i] < 'a' && str[i] > 'F')) {
+			if ((str[i] == 'x' || str[i] == 'X') && str[i - 1] != '0') {
+				return 0;
+			}
+		}
 		if ((str[i] >= 'a' && str[i] <= 'f') || (str[i] >= 'A' && str[i] <= 'F')) {
 			base = 16;
 		}
 	}
 	auto i = 0u;
 	if (str[0] == '+' || negative) ++i;
+	if (str[0] == '0' && (str[1] == 'X' || str[1] == 'x')) i += 2;
+	while (str[i] == ' ') ++i;
 	for (; i < size; ++i) {
+		if (str[i] == '.') return sum;
 		sum *= base;
-		while (str[i] == ' ') ++i;
 		switch (str[i]) {
 			case 'a':
 			case 'b':
@@ -60,14 +67,15 @@ const T ato(const char* const str, size_type size) {
 			case 'd':
 			case 'e':
 			case 'f':
+				sum += (str[i] - 'a' + 10);
+				break;
 			case 'A':
 			case 'B':
 			case 'C':
 			case 'D':
 			case 'E':
 			case 'F':
-				sum += str[i] - 'a' + 10;
-				sum *= 16;
+				sum += (str[i] - 'A' + 10);
 				break;
 			case '0':
 			case '1':
@@ -79,7 +87,7 @@ const T ato(const char* const str, size_type size) {
 			case '7':
 			case '8':
 			case '9':
-				sum += str[i] - '0';
+				sum += (str[i] - '0');
 				break;
 			default:
 				return 0;
